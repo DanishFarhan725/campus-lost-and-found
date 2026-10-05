@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Lost & Found — CECOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- ===== Top Nav ===== -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="#browse" class="brand" data-nav="browse">
+        <span class="brand-mark" aria-hidden="true">⌖</span>
+        <span class="brand-text">Lost<span class="brand-and">&amp;</span>Found</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary">
+        <button class="nav-link" data-nav="browse">Browse</button>
+        <button class="nav-link" data-nav="post">Report Item</button>
+        <button class="nav-link" data-nav="mine">My Posts</button>
+      </nav>
+
+      <div class="auth-area" id="authArea">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </header>
+
+  <main id="app">
+
+    <!-- ===== BROWSE VIEW ===== -->
+    <section class="view" id="view-browse" data-view="browse">
+      <div class="view-header">
+        <div class="view-header-text">
+          <p class="eyebrow">CECOS University · Campus-wide</p>
+          <h1>Find what's missing. Return what isn't yours.</h1>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-field">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.25" stroke="currentColor" stroke-width="1.5"/><line x1="11" y1="11" x2="14.5" y2="14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <input type="text" id="searchInput" placeholder="Search by title, description, or location…" />
+        </div>
+
+        <div class="filter-pills" id="typeFilter">
+          <button class="pill active" data-value="All">All</button>
+          <button class="pill" data-value="lost">Lost</button>
+          <button class="pill" data-value="found">Found</button>
+        </div>
+
+        <select id="categoryFilter" class="select-field" aria-label="Filter by category">
+          <option value="All">All categories</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Books">Books</option>
+          <option value="ID Cards">ID Cards</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Bags">Bags</option>
+          <option value="Keys">Keys</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <select id="statusFilter" class="select-field" aria-label="Filter by status">
+          <option value="All">Any status</option>
+          <option value="open">Unclaimed</option>
+          <option value="claimed">Resolved</option>
+        </select>
+      </div>
+
+      <div id="resultsMeta" class="results-meta" aria-live="polite"></div>
+      <div id="itemsGrid" class="items-grid" aria-live="polite"></div>
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-mark" aria-hidden="true">◌</div>
+        <h3>Nothing matches yet</h3>
+        <p>Try a different search term, or clear your filters.</p>
+      </div>
+    </section>
+
+    <!-- ===== POST ITEM VIEW ===== -->
+    <section class="view hidden" id="view-post" data-view="post">
+      <div class="view-header">
+        <div class="view-header-text">
+          <p class="eyebrow">New report</p>
+          <h1>Report a lost or found item</h1>
+        </div>
+      </div>
+
+      <form id="postForm" class="card-form" enctype="multipart/form-data">
+        <div class="type-toggle" role="radiogroup" aria-label="Report type">
+          <button type="button" class="type-toggle-btn active" data-type="lost" role="radio" aria-checked="true">
+            <span class="dot dot-lost"></span> I lost something
+          </button>
+          <button type="button" class="type-toggle-btn" data-type="found" role="radio" aria-checked="false">
+            <span class="dot dot-found"></span> I found something
+          </button>
+        </div>
+        <input type="hidden" id="itemType" name="type" value="lost" />
+
+        <div class="form-grid">
+          <label class="field">
+            <span>Title</span>
+            <input type="text" id="title" name="title" placeholder="e.g. Black North Face backpack" maxlength="80" required />
+          </label>
+
+          <label class="field">
+            <span>Category</span>
+            <select id="category" name="category" required>
+              <option value="" disabled selected>Choose one</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Books">Books</option>
+              <option value="ID Cards">ID Cards</option>
+              <option value="Clothing">Clothing</option>
+              <option value="Bags">Bags</option>
+              <option value="Keys">Keys</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Location</span>
+            <input type="text" id="location" name="location" placeholder="e.g. Library, 2nd floor" maxlength="80" required />
+          </label>
+
+          <label class="field">
+            <span>Date</span>
+            <input type="date" id="date" name="date" required />
+          </label>
+
+          <label class="field field-wide">
+            <span>Description</span>
+            <textarea id="description" name="description" rows="4" placeholder="Color, brand, distinguishing marks, where exactly it was lost/found…" maxlength="500" required></textarea>
+          </label>
+
+          <label class="field field-wide">
+            <span>Photo <em>(optional, max 5MB)</em></span>
+            <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/webp, image/gif" />
+            <div class="image-preview hidden" id="imagePreviewWrap">
+              <img id="imagePreview" alt="Preview of selected image" />
+              <button type="button" id="clearImage" class="link-btn">Remove photo</button>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <p class="form-hint" id="postHint"></p>
+          <button type="submit" class="btn btn-primary" id="postSubmitBtn">Submit report</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== MY POSTS VIEW ===== -->
+    <section class="view hidden" id="view-mine" data-view="mine">
+      <div class="view-header">
+        <div class="view-header-text">
+          <p class="eyebrow">Your activity</p>
+          <h1>My posts</h1>
+        </div>
+      </div>
+      <div id="mineGrid" class="items-grid"></div>
+      <div id="mineEmptyState" class="empty-state hidden">
+        <div class="empty-mark" aria-hidden="true">◌</div>
+        <h3>You haven't posted anything yet</h3>
+        <p>Lost or found something on campus? Report it so others can see.</p>
+        <button class="btn btn-primary" data-nav="post">Report an item</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== Item Detail Modal ===== -->
+  <div class="modal-overlay hidden" id="itemModalOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      <div id="modalBody"><!-- populated by JS --></div>
+    </div>
+  </div>
+
+  <!-- ===== Auth Modal (Login / Register) ===== -->
+  <div class="modal-overlay hidden" id="authModalOverlay">
+    <div class="modal modal-narrow" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <button class="modal-close" id="authModalClose" aria-label="Close">✕</button>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-authtab="login">Log in</button>
+        <button class="auth-tab" data-authtab="register">Sign up</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <h2 id="authModalTitle">Welcome back</h2>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" id="loginEmail" required autocomplete="email" />
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input type="password" id="loginPassword" required autocomplete="current-password" />
+        </label>
+        <p class="form-error hidden" id="loginError"></p>
+        <button type="submit" class="btn btn-primary btn-block">Log in</button>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden">
+        <h2>Create your account</h2>
+        <label class="field">
+          <span>Full name</span>
+          <input type="text" id="registerName" required autocomplete="name" />
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" id="registerEmail" required autocomplete="email" />
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input type="password" id="registerPassword" required autocomplete="new-password" minlength="6" />
+          <small>At least 6 characters</small>
+        </label>
+        <p class="form-error hidden" id="registerError"></p>
+        <button type="submit" class="btn btn-primary btn-block">Create account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Toast container ===== -->
+  <div id="toastContainer" class="toast-container" aria-live="assertive"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

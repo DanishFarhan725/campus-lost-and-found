@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+
+# Runtime database files
+data/*.json
+!data/.gitkeep
+
+# User-uploaded files
+uploads/*
+!uploads/.gitkeep
