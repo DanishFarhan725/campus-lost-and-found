@@ -2,10 +2,6 @@
   publish = "public"
   functions = "netlify/functions"
 
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["express"]
-
 # /api/* and /uploads/* are routed to the function by its own `config.path`
 # (see netlify/functions/api.mjs).
 
