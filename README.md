@@ -36,7 +36,7 @@ Users can create listings for lost or found items, search and filter existing re
 | Authentication | Express Session, bcryptjs |
 | Data Storage   | JSON file-based storage   |
 | File Uploads   | Multer                    |
-| Deployment     | Render                    |
+| Deployment     | Render, Netlify           |
 
 ## Project Structure
 
@@ -126,6 +126,8 @@ Uploaded item images are handled through Multer and stored by the application.
 ## Deployment
 
 The application is deployed as a Node.js web service on Render.
+
+It can also run on Netlify, with the API as a Netlify Function and data in Netlify Blobs. See [DEPLOY_TO_NETLIFY.md](DEPLOY_TO_NETLIFY.md).
 
 **Live:**
 https://campus-lost-and-found-t43x.onrender.com/

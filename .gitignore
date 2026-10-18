@@ -9,3 +9,4 @@ data/*.json
 # User-uploaded files
 uploads/*
 !uploads/.gitkeep
+.netlify/

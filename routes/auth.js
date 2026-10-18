@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters.' });
     }
 
-    const existing = db.findUserByEmail(email);
+    const existing = await db.findUserByEmail(email);
     if (existing) {
       return res.status(409).json({ error: 'An account with this email already exists.' });
     }
@@ -38,7 +38,10 @@ router.post('/register', async (req, res) => {
       passwordHash,
       createdAt: new Date().toISOString(),
     };
-    db.addUser(user);
+    const saved = await db.addUser(user);
+    if (!saved) {
+      return res.status(409).json({ error: 'An account with this email already exists.' });
+    }
 
     req.session.userId = user.id;
     res.status(201).json({ id: user.id, name: user.name, email: user.email });
@@ -56,7 +59,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required.' });
     }
 
-    const user = db.findUserByEmail(email);
+    const user = await db.findUserByEmail(email);
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
@@ -76,26 +79,25 @@ router.post('/login', async (req, res) => {
 
 // POST /api/auth/logout
 router.post('/logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      console.error('Logout error:', err);
-      return res.status(500).json({ error: 'Could not log out. Please try again.' });
-    }
-    res.clearCookie('connect.sid');
-    res.json({ success: true });
-  });
+  req.session = null;
+  res.json({ success: true });
 });
 
 // GET /api/auth/me
-router.get('/me', (req, res) => {
-  if (!req.session.userId) {
-    return res.status(200).json({ user: null });
+router.get('/me', async (req, res) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.status(200).json({ user: null });
+    }
+    const user = await db.findUserById(req.session.userId);
+    if (!user) {
+      return res.status(200).json({ user: null });
+    }
+    res.json({ user: { id: user.id, name: user.name, email: user.email } });
+  } catch (err) {
+    console.error('Me error:', err);
+    res.status(500).json({ error: 'Could not check your login right now.' });
   }
-  const user = db.findUserById(req.session.userId);
-  if (!user) {
-    return res.status(200).json({ user: null });
-  }
-  res.json({ user: { id: user.id, name: user.name, email: user.email } });
 });
 
 module.exports = router;

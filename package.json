@@ -7,10 +7,12 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@netlify/blobs": "^11.1.4",
     "bcryptjs": "^2.4.3",
+    "cookie-session": "^2.1.1",
     "express": "^4.19.2",
-    "express-session": "^1.18.0",
     "multer": "^2.0.0",
+    "serverless-http": "^4.0.0",
     "uuid": "^11.1.0"
   }
 }
