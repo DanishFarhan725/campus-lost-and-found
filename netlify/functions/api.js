@@ -21,6 +21,8 @@ const expressHandler = serverless(
 );
 
 exports.handler = async (event, context) => {
-  connectLambda(event); // gives @netlify/blobs its credentials for this request
+  // Gives @netlify/blobs its credentials for this request. When the event has
+  // no blobs payload, Blobs falls back to the NETLIFY_BLOBS_CONTEXT env var.
+  if (event.blobs) connectLambda(event);
   return expressHandler(event, context);
 };

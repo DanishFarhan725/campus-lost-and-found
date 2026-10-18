@@ -23,6 +23,10 @@ function createApp() {
 
   app.set('trust proxy', 1);
 
+  if (!process.env.SESSION_SECRET && process.env.USE_BLOBS === '1') {
+    console.warn('SESSION_SECRET is not set: sessions are signed with an insecure default key.');
+  }
+
   // Sessions live in a signed cookie, so they work across serverless instances
   app.use(
     cookieSession({
