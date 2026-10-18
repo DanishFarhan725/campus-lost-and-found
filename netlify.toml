@@ -2,6 +2,10 @@
   publish = "public"
   functions = "netlify/functions"
 
+[functions]
+  # Ship dependencies with the function; the bundle requires express at runtime
+  included_files = ["node_modules/**"]
+
 # /api/* and /uploads/* are routed to the function by its own `config.path`
 # (see netlify/functions/api.mjs).
 
